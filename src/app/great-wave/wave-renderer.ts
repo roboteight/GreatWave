@@ -230,6 +230,7 @@ export class WaveRenderer {
     this.wave(ctx, main, 'main', 'The great wave');
     ctx.restore();
     this.foreground(ctx, t);
+    this.cartouche(ctx);
     this.finish(ctx);
   }
 
@@ -767,6 +768,31 @@ export class WaveRenderer {
   }
 
   // ---------------------------------------------------------------- print finishing
+
+  /** Title panel at the top left of the viewport, in the manner of the print's cartouche. */
+  private cartouche(ctx: CanvasRenderingContext2D) {
+    // Anchor to the visible corner (the scene is cropped to cover the window).
+    const corner = ctx.getTransform().inverse().transformPoint({ x: 0, y: 0 });
+    const x = Math.max(0, corner.x) + 50;
+    const y = Math.max(0, corner.y) + 50;
+    const letters = [...'SIMARI'];
+    const step = 46;
+    const w = 90;
+    const h = letters.length * step + 36;
+
+    ctx.save();
+    ctx.fillStyle = '#f4ead0';
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 3;
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeRect(x, y, w, h);
+    ctx.fillStyle = INK;
+    ctx.font = '600 38px "Iowan Old Style","Palatino Linotype",Georgia,serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    letters.forEach((c, i) => ctx.fillText(c, x + w / 2, y + 18 + step / 2 + i * step));
+    ctx.restore();
+  }
 
   private finish(ctx: CanvasRenderingContext2D) {
     if (!this.paper) {
